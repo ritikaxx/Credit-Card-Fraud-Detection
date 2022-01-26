@@ -7,7 +7,7 @@ import tensorflow as tf
 import matplotlib.pyplot as plt
 import seaborn as sns
 sns.set(style='whitegrid', context='notebook')
-%matplotlib notebook
+
 
 # misc
 import random as rn

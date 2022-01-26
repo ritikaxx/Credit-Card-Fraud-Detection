@@ -1,6 +1,7 @@
 # Credit-Card-Fraud-Detection
 Anomaly Detection using Deep AutoEncoders
 
+![image](https://user-images.githubusercontent.com/68536395/151149006-72bc29e3-7dd4-47ec-9b28-279431275482.png)
 
 
 1.Due to the bottleneck architecture of the neural network, it is forced to learn a condensed representation from which to reproduce the original input.

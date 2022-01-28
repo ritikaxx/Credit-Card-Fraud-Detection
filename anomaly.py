@@ -53,3 +53,49 @@ column_names = list(visualisation_initial.drop('label', axis=1).columns)
 # isolate features from labels 
 features, labels = visualisation_initial.drop('label', axis=1).values, \
                    visualisation_initial.label.values
+
+from sklearn.manifold import TSNE
+from mpl_toolkits.mplot3d import Axes3D
+
+def tsne_scatter(features, labels, dimensions=2, save_as='graph.png'):
+    if dimensions not in (2, 3):
+        raise ValueError('tsne_scatter can only plot in 2d or 3d (What are you? An alien that can visualise >3d?). Make sure the "dimensions" argument is in (2, 3)')
+
+    # t-SNE dimensionality reduction
+    features_embedded = TSNE(n_components=dimensions, random_state=RANDOM_SEED).fit_transform(features)
+    
+    # initialising the plot
+    fig, ax = plt.subplots(figsize=(8,8))
+    
+    # counting dimensions
+    if dimensions == 3: ax = fig.add_subplot(111, projection='3d')
+
+ # plotting data
+    ax.scatter(
+        *zip(*features_embedded[np.where(labels==1)]),
+        marker='o',
+        color='r',
+        s=2,
+        alpha=0.7,
+        label='Fraud'
+    )
+    ax.scatter(
+        *zip(*features_embedded[np.where(labels==0)]),
+        marker='o',
+        color='g',
+        s=2,
+        alpha=0.3,
+        label='Clean'
+    )
+
+    # storing it to be displayed later
+    plt.legend(loc='best')
+    plt.savefig(save_as);
+    plt.show;
+    
+    tsne_scatter(features, labels, dimensions=2, save_as='tsne_initial_2d.png')
+    
+    print(f"""Shape of the datasets:
+    clean (rows, cols) = {clean.shape}
+    fraud (rows, cols) = {fraud.shape}""")
+    

@@ -99,3 +99,15 @@ def tsne_scatter(features, labels, dimensions=2, save_as='graph.png'):
     clean (rows, cols) = {clean.shape}
     fraud (rows, cols) = {fraud.shape}""")
     
+    
+    # shuffle our training set
+clean = clean.sample(frac=1).reset_index(drop=True)
+
+# training set: exlusively non-fraud transactions
+X_train = clean.iloc[:TRAINING_SAMPLE].drop('label', axis=1)
+
+# testing  set: the remaining non-fraud + all the fraud 
+X_test = clean.iloc[TRAINING_SAMPLE:].append(fraud).sample(frac=1)
+print(f"""Our testing set is composed as follows:
+
+{X_test.label.value_counts()}""")

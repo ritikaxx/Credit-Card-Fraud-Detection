@@ -111,3 +111,19 @@ X_test = clean.iloc[TRAINING_SAMPLE:].append(fraud).sample(frac=1)
 print(f"""Our testing set is composed as follows:
 
 {X_test.label.value_counts()}""")
+
+from sklearn.model_selection import train_test_split
+
+# train // validate - no labels since they're all clean anyway
+X_train, X_validate = train_test_split(X_train, 
+                                       test_size=VALIDATE_SIZE, 
+                                       random_state=RANDOM_SEED)
+
+# manually splitting the labels from the test df
+X_test, y_test = X_test.drop('label', axis=1).values, X_test.label.values
+
+print(f"""Shape of the datasets:
+    training (rows, cols) = {X_train.shape}
+    validate (rows, cols) = {X_validate.shape}
+    holdout  (rows, cols) = {X_test.shape}""")
+

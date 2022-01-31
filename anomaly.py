@@ -127,3 +127,33 @@ print(f"""Shape of the datasets:
     validate (rows, cols) = {X_validate.shape}
     holdout  (rows, cols) = {X_test.shape}""")
 
+#Building pipeline
+from sklearn.preprocessing import Normalizer, MinMaxScaler
+from sklearn.pipeline import Pipeline
+
+# configure our pipeline
+pipeline = Pipeline([('normalizer', Normalizer()),
+                     ('scaler', MinMaxScaler())])
+
+#Fitting the pipeline
+
+# get normalization parameters by fitting to the training data
+pipeline.fit(X_train);
+
+#Applying transformations with acquired parameters
+
+# transform the training and validation data with these parameters
+X_train_transformed = pipeline.transform(X_train)
+X_validate_transformed = pipeline.transform(X_validate)
+
+g = sns.PairGrid(X_train.iloc[:,:3].sample(600, random_state=RANDOM_SEED))
+plt.subplots_adjust(top=0.9)
+g.fig.suptitle('Before:')
+g.map_diag(sns.kdeplot)
+g.map_offdiag(sns.kdeplot);
+
+g = sns.PairGrid(pd.DataFrame(X_train_transformed, columns=column_names).iloc[:,:3].sample(600, random_state=RANDOM_SEED))
+plt.subplots_adjust(top=0.9)
+g.fig.suptitle('After:')
+g.map_diag(sns.kdeplot)
+g.map_offdiag(sns.kdeplot);

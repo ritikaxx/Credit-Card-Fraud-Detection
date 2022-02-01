@@ -157,3 +157,34 @@ plt.subplots_adjust(top=0.9)
 g.fig.suptitle('After:')
 g.map_diag(sns.kdeplot)
 g.map_offdiag(sns.kdeplot);
+
+# data dimensions // hyperparameters 
+input_dim = X_train_transformed.shape[1]
+BATCH_SIZE = 256
+EPOCHS = 100
+
+# https://keras.io/layers/core/
+autoencoder = tf.keras.models.Sequential([
+    
+    # deconstruct / encode
+    tf.keras.layers.Dense(input_dim, activation='elu', input_shape=(input_dim, )), 
+    tf.keras.layers.Dense(16, activation='elu'),
+    tf.keras.layers.Dense(8, activation='elu'),
+    tf.keras.layers.Dense(4, activation='elu'),
+    tf.keras.layers.Dense(2, activation='elu'),
+    
+    # reconstruction / decode
+    tf.keras.layers.Dense(4, activation='elu'),
+    tf.keras.layers.Dense(8, activation='elu'),
+    tf.keras.layers.Dense(16, activation='elu'),
+    tf.keras.layers.Dense(input_dim, activation='elu')
+    
+])
+
+# https://keras.io/api/models/model_training_apis/
+autoencoder.compile(optimizer="adam", 
+                    loss="mse",
+                    metrics=["acc"])
+
+# print an overview of our model
+autoencoder.summary();

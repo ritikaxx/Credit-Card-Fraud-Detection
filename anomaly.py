@@ -188,3 +188,49 @@ autoencoder.compile(optimizer="adam",
 
 # print an overview of our model
 autoencoder.summary();
+
+from datetime import datetime
+
+# current date and time
+yyyymmddHHMM = datetime.now().strftime('%Y%m%d%H%M')
+
+# new folder for a new run
+log_subdir = f'{yyyymmddHHMM}_batch{BATCH_SIZE}_layers{len(autoencoder.layers)}'
+
+# define our early stopping
+early_stop = tf.keras.callbacks.EarlyStopping(
+    monitor='val_loss',
+    min_delta=0.0001,
+    patience=10,
+    verbose=1, 
+    mode='min',
+    restore_best_weights=True
+)
+
+
+save_model = tf.keras.callbacks.ModelCheckpoint(
+    filepath='autoencoder_best_weights.hdf5',
+    save_best_only=True,
+    monitor='val_loss',
+    verbose=0,
+    mode='min'
+)
+
+tensorboard = tf.keras.callbacks.TensorBoard(
+    f'logs/{log_subdir}',
+    batch_size=BATCH_SIZE,
+    update_freq='batch'
+)
+
+# callbacks argument only takes a list
+cb = [early_stop, save_model, tensorboard]
+
+#Training
+history = autoencoder.fit(
+    X_train_transformed, X_train_transformed,
+    shuffle=True,
+    epochs=EPOCHS,
+    batch_size=BATCH_SIZE,
+    callbacks=cb,
+    validation_data=(X_validate_transformed, X_validate_transformed)
+);

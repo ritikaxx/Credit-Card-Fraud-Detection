@@ -234,3 +234,39 @@ history = autoencoder.fit(
     callbacks=cb,
     validation_data=(X_validate_transformed, X_validate_transformed)
 );
+
+# transform the test set with the pipeline fitted to the training set
+X_test_transformed = pipeline.transform(X_test)
+
+# pass the transformed test set through the autoencoder to get the reconstructed result
+reconstructions = autoencoder.predict(X_test_transformed)
+
+# calculating the mean squared error reconstruction loss per row in the numpy array
+mse = np.mean(np.power(X_test_transformed - reconstructions, 2), axis=1)
+clean = mse[y_test==0]
+fraud = mse[y_test==1]
+
+fig, ax = plt.subplots(figsize=(6,6))
+
+ax.hist(clean, bins=50, density=True, label="clean", alpha=.6, color="green")
+ax.hist(fraud, bins=50, density=True, label="fraud", alpha=.6, color="red")
+
+plt.title("(Normalized) Distribution of the Reconstruction Loss")
+plt.legend()
+plt.show()
+
+THRESHOLD = 3
+
+def mad_score(points):
+    """https://www.itl.nist.gov/div898/handbook/eda/section3/eda35h.htm """
+    m = np.median(points)
+    ad = np.abs(points - m)
+    mad = np.median(ad)
+    
+    return 0.6745 * ad / mad
+
+z_scores = mad_score(mse)
+outliers = z_scores > THRESHOLD
+
+print(f"Detected {np.sum(outliers):,} outliers in a total of {np.size(z_scores):,} transactions [{np.sum(outliers)/np.size(z_scores):.2%}].")
+

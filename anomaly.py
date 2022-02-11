@@ -270,3 +270,30 @@ outliers = z_scores > THRESHOLD
 
 print(f"Detected {np.sum(outliers):,} outliers in a total of {np.size(z_scores):,} transactions [{np.sum(outliers)/np.size(z_scores):.2%}].")
 
+from sklearn.metrics import (confusion_matrix, 
+                             precision_recall_curve)
+
+# get (mis)classification
+cm = confusion_matrix(y_test, outliers)
+
+# true/false positives/negatives
+(tn, fp, 
+ fn, tp) = cm.flatten()
+
+print(f"""The classifications using the MAD method with threshold={THRESHOLD} are as follows:
+{cm}
+
+% of transactions labeled as fraud that were correct (precision): {tp}/({fp}+{tp}) = {tp/(fp+tp):.2%}
+% of fraudulent transactions were caught succesfully (recall):    {tp}/({fn}+{tp}) = {tp/(fn+tp):.2%}""")
+
+clean = z_scores[y_test==0]
+fraud = z_scores[y_test==1]
+
+fig, ax = plt.subplots(figsize=(6,6))
+
+ax.hist(clean, bins=50, density=True, label="clean", alpha=.6, color="green")
+ax.hist(fraud, bins=50, density=True, label="fraud", alpha=.6, color="red")
+
+plt.title("Distribution of the modified z-scores")
+plt.legend()
+plt.show()

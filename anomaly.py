@@ -297,3 +297,36 @@ ax.hist(fraud, bins=50, density=True, label="fraud", alpha=.6, color="red")
 plt.title("Distribution of the modified z-scores")
 plt.legend()
 plt.show()
+
+# taking all the fraud, undersampling clean
+fraud = X_test_transformed[y_test==1]
+clean = X_test_transformed[y_test==0][:len(fraud) * RATIO_TO_FRAUD, ]
+
+# combining arrays & building labels
+features = np.append(fraud, clean, axis=0)
+labels = np.append(np.ones(len(fraud)),
+                   np.zeros(len(clean)))
+
+# getting latent space representation
+latent_representation = encoder.predict(features)
+
+print(f'Clean transactions downsampled from {len(X_test_transformed[y_test==0]):,} to {len(clean):,}.')
+print('Shape of latent representation:', latent_representation.shape)
+Clean transactions downsampled from 84,315 to 7,380.
+Shape of latent representation: (7872, 2)
+    
+    X = latent_representation[:,0]
+y = latent_representation[:,1]
+
+# plotting
+plt.subplots(figsize=(8, 8))
+plt.scatter(X[labels==0], y[labels==0], s=1, c='g', alpha=0.3, label='Clean')
+plt.scatter(X[labels==1], y[labels==1], s=2, c='r', alpha=0.7, label='Fraud')
+
+# labeling
+plt.legend(loc='best')
+plt.title('Latent Space Representation')
+
+# saving & displaying
+plt.savefig('latent_representation_2d');
+plt.show()
